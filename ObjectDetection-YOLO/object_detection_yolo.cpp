@@ -61,46 +61,23 @@ int main(int argc, char** argv)
     
     // Open a video file or an image file or a camera stream.
     string str, outputFile;
-    VideoCapture cap;
-    VideoWriter video;
-    Mat frame, blob;
+    outputFile = "yolo_out_cpp.avi";
     
-    try {
+    
+    VideoWriter video;
+    
+    
+
+    VideoCapture cap(0);
         
-        outputFile = "yolo_out_cpp.avi";
-        if (parser.has("image"))
-        {
-            // Open the image file
-            str = parser.get<String>("image");
-            ifstream ifile(str);
-            if (!ifile) throw("error");
-            cap.open(str);
-            str.replace(str.end()-4, str.end(), "_yolo_out_cpp.jpg");
-            outputFile = str;
-        }
-        else if (parser.has("video"))
-        {
-            // Open the video file
-            str = parser.get<String>("video");
-            ifstream ifile(str);
-            if (!ifile) throw("error");
-            cap.open(str);
-            str.replace(str.end()-4, str.end(), "_yolo_out_cpp.avi");
-            outputFile = str;
-        }
-        // Open the webcaom
-        else cap.open(parser.get<int>("device"));
-        
-    }
-    catch(...) {
-        cout << "Could not open the input image/video stream" << endl;
-        return 0;
-    }
+    Mat frame, blob;
+          
+    
     
     // Get the video writer initialized to save the output video
-    if (!parser.has("image")) {
-        video.open(outputFile, VideoWriter::fourcc('M','J','P','G'), 28, Size(cap.get(CAP_PROP_FRAME_WIDTH), cap.get(CAP_PROP_FRAME_HEIGHT)));
-    }
+    
+    video.open(outputFile, VideoWriter::fourcc('M','J','P','G'), 28, Size(cap.get(CAP_PROP_FRAME_WIDTH), cap.get(CAP_PROP_FRAME_HEIGHT)));
+    
     
     // Create a window
     static const string kWinName = "Deep learning object detection in OpenCV";
