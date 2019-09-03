@@ -65,15 +65,9 @@ int main(int argc, char** argv)
     
     
     VideoWriter video;
-    
-    
-
     VideoCapture cap(0);
-        
     Mat frame, blob;
           
-    
-    
     // Get the video writer initialized to save the output video
     
     video.open(outputFile, VideoWriter::fourcc('M','J','P','G'), 28, Size(cap.get(CAP_PROP_FRAME_WIDTH), cap.get(CAP_PROP_FRAME_HEIGHT)));
@@ -170,6 +164,7 @@ void postprocess(Mat& frame, const vector<Mat>& outs)
     
     // Perform non maximum suppression to eliminate redundant overlapping boxes with
     // lower confidences
+
     vector<int> indices;
     NMSBoxes(boxes, confidences, confThreshold, nmsThreshold, indices);
     for (size_t i = 0; i < indices.size(); ++i)
@@ -192,15 +187,17 @@ void drawPred(int classId, float conf, int left, int top, int right, int bottom,
     if (!classes.empty())
     {
         CV_Assert(classId < (int)classes.size());
-        label = classes[classId] + ":" + label;
+        if (classes[classId]=="person"){
+            label = classes[classId] + ":" + label;
+            cout << classes[classId] << endl;
+            //Display the label at the top of the bounding box
+            int baseLine;
+            Size labelSize = getTextSize(label, FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine);
+            top = max(top, labelSize.height);
+            rectangle(frame, Point(left, top - round(1.5*labelSize.height)), Point(left + round(1.5*labelSize.width), top + baseLine), Scalar(255, 255, 255), FILLED);
+            putText(frame, label, Point(left, top), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(0,0,0),1);
+        }
     }
-    
-    //Display the label at the top of the bounding box
-    int baseLine;
-    Size labelSize = getTextSize(label, FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine);
-    top = max(top, labelSize.height);
-    rectangle(frame, Point(left, top - round(1.5*labelSize.height)), Point(left + round(1.5*labelSize.width), top + baseLine), Scalar(255, 255, 255), FILLED);
-    putText(frame, label, Point(left, top), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(0,0,0),1);
 }
 
 // Get the names of the output layers
